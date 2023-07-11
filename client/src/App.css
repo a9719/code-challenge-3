@@ -1,0 +1,15 @@
+.container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 2px solid purple;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.result-group {
+  margin-top: 20px;
+}
