@@ -1,8 +1,12 @@
 {
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.13.7",
     "axios": "^1.4.0",
     "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mui": "^0.0.1"
   },
   "name": "code-challenge-3",
   "description": "Your task is to create a 2-page application",

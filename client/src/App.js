@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';
+import swapIcon from './assets/converter-swap-icon.png';
+import converterIcon from './assets/converter-icon.png'
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+
+
+
 
 function App() {
   const [baseCurrency, setBaseCurrency] = useState('USD');
@@ -46,8 +55,13 @@ function App() {
   const handleSourceAmountChange = (event) => {
     const amount = parseFloat(event.target.value);
     setSourceAmount(amount);
-    fetchForexRate();
   };
+  
+  useEffect(() => {
+    fetchForexRate();
+  }, [baseCurrency, targetCurrency, sourceAmount]);
+  
+  
 
   const handleCurrencySwap = () => {
     const temp = baseCurrency;
@@ -68,12 +82,17 @@ function App() {
     fetchForexRate();
   };
 
-  return (
+return (
     <div className="container">
-      <h1>Forex Calculator</h1>
+     <h1> <img className="icon" src={converterIcon} alt="Swap" /> Currency Transfer</h1>
       <div className="form-group">
         <label>
-          Base Currency:
+          From:
+          <input
+            type="number"
+            value={sourceAmount}
+            onChange={handleSourceAmountChange}
+          />
           <select value={baseCurrency} onChange={handleBaseCurrencyChange}>
             {currencyOptions.map((currency) => (
               <option key={currency} value={currency}>
@@ -82,8 +101,14 @@ function App() {
             ))}
           </select>
         </label>
+       
+       <div>
+       <img className="icon" src={swapIcon} alt="Swap" onClick={handleCurrencySwap}/>
+      </div>
+      
         <label>
-          Target Currency:
+          To:
+          {targetAmount}
           <select value={targetCurrency} onChange={handleTargetCurrencyChange}>
             {currencyOptions.map((currency) => (
               <option key={currency} value={currency}>
@@ -95,25 +120,21 @@ function App() {
       </div>
       <div className="form-group">
         <label>
-          Source Amount:
-          <input
-            type="number"
-            value={sourceAmount}
-            onChange={handleSourceAmountChange}
-          />
+          
         </label>
       </div>
-      <div>
-        <button onClick={handleCurrencySwap}>Swap Currencies</button>
+      <div className="result-group">
+        <h2>Market Rate: {forexRate}</h2>
+       
       </div>
+      
       <div className="result-group">
         <h2>Fee: {fee}</h2>
-        <h2>Target Amount: {targetAmount}</h2>
+       
       </div>
     </div>
   );
 }
-
 export default App;
 
 

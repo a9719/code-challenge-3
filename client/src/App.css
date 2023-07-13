@@ -4,6 +4,7 @@
   padding: 20px;
   border: 2px solid purple;
   text-align: center;
+  border: 10px solid #7729b8;
 }
 
 .form-group {
@@ -12,4 +13,21 @@
 
 .result-group {
   margin-top: 20px;
+}
+.swap-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #002854;
+  filter: invert(50%);
+
+}
+
+.swap-button img {
+  width: 20px;
+  height: 20px;
+}
+.icon  {
+  width: 2em;
+  height: 2em;
 }
