@@ -1,5 +1,7 @@
 const express = require('express');
 const axios = require('axios');
+const mysql = require('mysql');
+
 
 const cors = require('cors');
 
@@ -15,6 +17,101 @@ const API_KEY = '5b969a7016f940f9ae4c04a23b515172'; // Replace with your Open Ex
 
 app.use(express.json());
 app.use(cors());
+
+function createTable() {
+  const createTableQuery = `
+  CREATE TABLE IF NOT EXISTS conversions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    baseCurrency VARCHAR(3),
+    targetCurrency VARCHAR(3),
+    sourceAmount DECIMAL(10, 2),
+    targetAmount DECIMAL(10, 2),
+    fee DECIMAL(10, 2),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+  `;
+
+  db.query(createTableQuery, (err) => {
+    if (err) {
+      console.error('Error creating table: ', err);
+      // Handle the error
+    } else {
+      console.log('Table created successfully.');
+      // Proceed with other operations
+      // ...
+    }
+  });
+}
+
+
+// MySQL connection configuration
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'new_password',
+});
+
+// Connect to the MySQL database
+db.connect((err) => {
+  if (err) {
+    console.error('Error connecting to MySQL:', err);
+    return;
+  }
+  console.log('Connected to MySQL database');
+});
+
+db.query('CREATE DATABASE IF NOT EXISTS forex', (error) => {
+  if (error) {
+    console.error('Error creating database:', error);
+    return;
+  }
+  console.log('Database created!');
+});
+
+db.query('USE forex', (error) => {
+  if (error) {
+    console.error('Error selecting database: ', error);
+    return;
+  }});
+
+
+
+
+
+
+// API endpoint to save the conversion data
+app.post('/api/save-conversion', (req, res) => {
+  const { baseCurrency,targetCurrency,sourceAmount, targetAmount, fee, createdAt } = req.body;
+
+  db.query("SHOW TABLES LIKE 'conversions'", (err, results) => {
+    if (err) {
+      console.error('Error checking table existence: ', err);
+      // Handle the error
+    } else {
+      if (results.length === 0) {
+        // Table does not exist, create it
+        createTable();
+      } else {
+        // Table already exists, proceed with other operations
+        // ...
+      }
+    }
+  });
+  
+
+  // Insert the conversion data into the database
+  const sql = `INSERT INTO conversions (baseCurrency,targetCurrency,sourceAmount, targetAmount, fee, createdAt) VALUES (?, ?, ?, ?,?,?)`;
+  const currentTime = new Date();
+  db.query(sql, [baseCurrency,targetCurrency,sourceAmount, targetAmount, fee, currentTime], (err, result) => {
+    if (err) {
+      console.error('Error saving conversion data:', err);
+      res.status(500).json({ error: 'Failed to save conversion data' });
+      return;
+    }
+    res.status(200).json({ message: 'Conversion data saved successfully' });
+  });
+});
+
 
 // Endpoint to fetch the Forex rates
 app.post('/api/forex', async (req, res) => {
@@ -40,6 +137,21 @@ app.post('/api/forex', async (req, res) => {
     console.error('Error fetching Forex rates:', error);
     res.status(500).json({ error: 'Failed to fetch Forex rates' });
   }
+});
+
+app.get('/api/data', (req, res) => {
+  // Retrieve data from the table
+  db.query('SELECT * FROM forex.conversions', (queryErr, results) => {
+    console.log(results);
+    if (queryErr) {
+      console.error('Error executing query: ', queryErr);
+      res.status(500).send('An error occurred while fetching data.');
+      return;
+    }
+
+    // Send the data as JSON response
+    res.json(results);
+  });
 });
 
 // Start the server

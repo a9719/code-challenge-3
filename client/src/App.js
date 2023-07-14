@@ -3,9 +3,9 @@ import axios from 'axios';
 import './App.css';
 import swapIcon from './assets/converter-swap-icon.png';
 import converterIcon from './assets/converter-icon.png'
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
+
+
+
 
 
 
@@ -82,8 +82,34 @@ function App() {
     fetchForexRate();
   };
 
+  const handleSubmit = async () => {
+    try {
+      // Prepare the conversion data to be sent to the backend
+      const conversionData = {
+        baseCurrency,
+        targetCurrency,
+        sourceAmount,
+        targetAmount,
+        fee,
+      };
+
+      // Send a POST request to the backend endpoint
+      await axios.post('http://localhost:3001/api/save-conversion', conversionData);
+
+      // Show a success message or perform any other desired action
+      console.log('Conversion data saved successfully!');
+    } catch (error) {
+      console.error('Error saving conversion data:', error);
+    }
+  };
+
+
 return (
-    <div className="container">
+
+  
+
+<div className="container">
+  
      <h1> <img className="icon" src={converterIcon} alt="Swap" /> Currency Transfer</h1>
       <div className="form-group">
         <label>
@@ -123,15 +149,19 @@ return (
           
         </label>
       </div>
+      <div>
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
       <div className="result-group">
         <h2>Market Rate: {forexRate}</h2>
        
       </div>
+
       
       <div className="result-group">
         <h2>Fee: {fee}</h2>
-       
       </div>
+
     </div>
   );
 }
